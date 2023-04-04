@@ -19,7 +19,7 @@ import java.io.IOException;
 public class SimpleImageProcessingExample {
 
   static public void main(String[] args) throws Exception {
-    ex1();
+    ex1BIS();
     
   } // EndMain
 
@@ -38,6 +38,22 @@ public class SimpleImageProcessingExample {
 
 
     }
+
+    public static void  ex1BIS(){
+        try{
+            IImageFilteringEngine im = new SingleThreadedImageFilteringEngine();
+            im.loadImage("./TEST_IMAGES/MELVINMORE.png");
+            im.applyFilter(new GrayLevelFilter());
+            im.applyFilter(new GaussianContourExtractorFilter());
+            im.writeOutPngImage("./TEST_IMAGES/MELVINMORE_OUT.png");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     public static void ExampleGive() throws IOException {
         // reading image in
