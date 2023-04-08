@@ -21,7 +21,7 @@ public class ImageFilteringEngineTest {
 
         engine.setImg(inputImage);
         engine.applyFilter(new GrayLevelFilter());
-
+        BufferedImage actualOutputImage = engine.getImg();
         assertImagesEqual(expectedOutputImage, actualOutputImage);
     }
 
@@ -33,8 +33,9 @@ public class ImageFilteringEngineTest {
         // Example test case:
         BufferedImage inputImage = ImageIO.read(new File("path/to/input/image.png"));
         BufferedImage expectedOutputImage = ImageIO.read(new File("path/to/expected/output/image.png"));
-
-        BufferedImage actualOutputImage = engine.applyFilter(inputImage, new GaussianContourExtractorFilter());
+        engine.setImg(inputImage);
+        engine.applyFilter(new GaussianContourExtractorFilter());
+        BufferedImage actualOutputImage = engine.getImg();
 
         assertImagesEqual(expectedOutputImage, actualOutputImage);
     }
