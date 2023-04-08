@@ -17,12 +17,14 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
         tmpFile = new File(PRIVATE_FILE_PATH);
         tmpFile.deleteOnExit();
         num = 0;
+        outImg = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
     }
 
     @Override
     public void loadImage(String inputImage) throws Exception {
         inImg  = ImageIO.read(new File(inputImage));
-        setOutImg();
+        System.out.println("Image loaded"  + inputImage);
+        reset();
     }
 
     @Override
@@ -34,19 +36,22 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
     @Override
     public void setImg(BufferedImage newImg) {
         inImg = newImg;
-        setOutImg();
+
     }
 
 
     @Override
     public BufferedImage getImg() {
+        reset();
         return outImg;
+
     }
 
     @Override
     public void applyFilter(IFilter someFilter) {
         // generating new image from original
         if ( num == 0 ) {
+            setOutImg(someFilter.getMargin());
             runFilter(someFilter, inImg, outImg);
             try{
                 writeOutPngImage(tmpFile.getAbsolutePath());
@@ -56,10 +61,11 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
         }
         else {
             try{
-                loadImage(tmpFile.getAbsolutePath());
+                inImg  = ImageIO.read(tmpFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            setOutImg(someFilter.getMargin());
             runFilter(someFilter, inImg, outImg);
             try{
                 writeOutPngImage(tmpFile.getAbsolutePath());
@@ -68,24 +74,37 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
             }
         }
 
+        num++;
+
 
 
     }
 
     private void runFilter(IFilter filter,BufferedImage inImg_, BufferedImage outImg_){
+        int max_X = inImg_.getWidth() - ((filter.getMargin())) ;
+        int max_Y = inImg_.getHeight() - ((filter.getMargin())) ;
+        int min_X = filter.getMargin();
+        int min_Y = filter.getMargin();
+
         // generating new image from original
-        for (int x = 0; x < inImg_.getWidth(); x++) {
-            for (int y = 0; y < inImg_.getHeight(); y++) {
+        for (int x = min_X; x < max_X; x++) {
+            for (int y = min_Y; y < max_Y; y++) {
+                //System.out.println("x: " + x + " y: " + y);
                 filter.applyFilterAtPoint(x, y, inImg_, outImg_);
             } // EndFor y
         } // EndFor x
 
     }
 
-    private void setOutImg() {
-        outImg = new BufferedImage(inImg.getWidth(),
-                inImg.getHeight(),
+    private void setOutImg(int margin) {
+        outImg = new BufferedImage(inImg.getWidth()-(margin*2),
+                inImg.getHeight()-(margin*2),
                 BufferedImage.TYPE_INT_RGB);
+
+    }
+
+    private void reset() {
+        num = 0;
     }
 
 }

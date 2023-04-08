@@ -11,31 +11,51 @@ public class ImageFilteringEngineTest {
     private IImageFilteringEngine engine = new SingleThreadedImageFilteringEngine(); // Replace 'MyImageFilteringEngine' with your actual implementation
 
     @Test
+    public void  testGaussianContourExtractorFilter() throws IOException {
+        // TODO: Add test cases for white, black, red, green, blue rectangles
+        // and provided images (FourCircles.png and 15226222451_5fd668d81a_c.jpg)
+
+        // Example test case:
+        BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
+        BufferedImage expectedOutputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles_gaussian_contour.png"));
+
+        engine.setImg(inputImage);
+        engine.applyFilter(new GrayLevelFilter());
+        engine.applyFilter(new GaussianContourExtractorFilter());
+
+        try {
+            engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage actualOutputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
+        assertImagesEqual(expectedOutputImage, actualOutputImage);
+    }
+
+    @Test
     public void testGrayLevelFilter() throws IOException {
         // TODO: Add test cases for white, black, red, green, blue rectangles
         // and provided images (FourCircles.png and 15226222451_5fd668d81a_c.jpg)
 
         // Example test case:
-        BufferedImage inputImage = ImageIO.read(new File("path/to/input/image.png"));
-        BufferedImage expectedOutputImage = ImageIO.read(new File("path/to/expected/output/image.png"));
+        BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
+        BufferedImage expectedOutputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles_gray.png"));
 
         engine.setImg(inputImage);
         engine.applyFilter(new GrayLevelFilter());
-        BufferedImage actualOutputImage = engine.getImg();
-        assertImagesEqual(expectedOutputImage, actualOutputImage);
-    }
 
-    @Test
-    public void testGaussianContourExtractorFilter() throws IOException {
-        // TODO: Add test cases for white, black, red, green, blue rectangles
-        // and provided images (FourCircles.png and 15226222451_5fd668d81a_c.jpg)
 
-        // Example test case:
-        BufferedImage inputImage = ImageIO.read(new File("path/to/input/image.png"));
-        BufferedImage expectedOutputImage = ImageIO.read(new File("path/to/expected/output/image.png"));
-        engine.setImg(inputImage);
-        engine.applyFilter(new GaussianContourExtractorFilter());
-        BufferedImage actualOutputImage = engine.getImg();
+
+        try {
+            engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gray_TEST.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage actualOutputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles_gray_TEST.png"));
+
+
 
         assertImagesEqual(expectedOutputImage, actualOutputImage);
     }
