@@ -16,7 +16,7 @@ public class GrayLevelFilter implements IFilter{
         // computing new color from extracted components
 
 
-        int newRgb = (red/3 + green/3 + blue/3);
+        int newRgb = (red + green + blue)/3;
 
         newRgb = (newRgb << 16) | (newRgb << 8) | newRgb;
 
