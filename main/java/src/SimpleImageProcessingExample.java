@@ -9,7 +9,7 @@
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
-import java.awt.Color ;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class SimpleImageProcessingExample {
 
   static public void main(String[] args) throws Exception {
-    ex1();
+      //ExampleGive();
     
   } // EndMain
 
@@ -27,8 +27,9 @@ public class SimpleImageProcessingExample {
     public static void  ex1(){
         try{
             IImageFilteringEngine im = new SingleThreadedImageFilteringEngine();
-            im.loadImage("./TEST_IMAGES/15226222451_5fd668d81a_c.jpg");
+            im.loadImage("./TEST_IMAGES/15226222451_5fd668d81a_c.png");
             im.applyFilter(new GrayLevelFilter());
+
             im.applyFilter(new GaussianContourExtractorFilter());
             im.writeOutPngImage("./TEST_IMAGES/15226222451_5fd668d81a_c_gaussian_contour.png");
         }
@@ -39,13 +40,14 @@ public class SimpleImageProcessingExample {
 
     }
 
-    public static void  ex1BIS(){
+    public static void  ex1_FromGray(){
         try{
             IImageFilteringEngine im = new SingleThreadedImageFilteringEngine();
-            im.loadImage("./TEST_IMAGES/MELVINMORE.png");
-            im.applyFilter(new GrayLevelFilter());
+            im.loadImage("./TEST_IMAGES/15226222451_5fd668d81a_c_gray.png");
+
+
             im.applyFilter(new GaussianContourExtractorFilter());
-            im.writeOutPngImage("./TEST_IMAGES/MELVINMORE_OUT.png");
+            im.writeOutPngImage("./TEST_IMAGES/15226222451_5fd668d81a_c_gaussian_contour.png");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -53,6 +55,7 @@ public class SimpleImageProcessingExample {
 
 
     }
+
 
 
     public static void ExampleGive() throws IOException {
