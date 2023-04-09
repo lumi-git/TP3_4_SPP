@@ -5,6 +5,9 @@ import java.io.File;
 public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine {
 
     private final String PRIVATE_FILE_PATH = "./TEST_IMAGES/ENGINETPM.png";
+
+    private final boolean DEBUG = true;
+
     // reading image in
     BufferedImage inImg;
     // creating new image
@@ -23,7 +26,7 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
     @Override
     public void loadImage(String inputImage) throws Exception {
         inImg  = ImageIO.read(new File(inputImage));
-        System.out.println("Image loaded"  + inputImage);
+        printDebug("Image loaded from : " + inputImage);
         reset();
     }
 
@@ -31,11 +34,13 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
     public void writeOutPngImage(String outFile) throws Exception {
         File f = new File(outFile);
         ImageIO.write(outImg, "png", f);
+        printDebug("Output image written at : " + outFile);
     }
 
     @Override
     public void setImg(BufferedImage newImg) {
         inImg = newImg;
+        printDebug("New Image set : " + newImg);
 
     }
 
@@ -49,6 +54,8 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
 
     @Override
     public void applyFilter(IFilter someFilter) {
+        printDebug("StartApplying Filter " + num );
+        printDebug("Filter Info : " + someFilter.getClass().getName() + " with margin : " + someFilter.getMargin());
         // generating new image from original
         if ( num == 0 ) {
             setOutImg(someFilter.getMargin());
@@ -73,10 +80,8 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
                 e.printStackTrace();
             }
         }
-
+        printDebug("EndApplying Filter " + num );
         num++;
-
-
 
     }
 
@@ -89,7 +94,6 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
         // generating new image from original
         for (int x = min_X; x < max_X; x++) {
             for (int y = min_Y; y < max_Y; y++) {
-                //System.out.println("x: " + x + " y: " + y);
                 filter.applyFilterAtPoint(x, y, inImg_, outImg_);
             } // EndFor y
         } // EndFor x
@@ -106,5 +110,11 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
     private void reset() {
         num = 0;
     }
+
+    private void printDebug(String msg) {
+        if(DEBUG)
+            System.out.println("ImageFilteringEngine_DEBUG |> " + msg);
+    }
+
 
 }

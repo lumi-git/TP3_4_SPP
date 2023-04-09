@@ -18,8 +18,8 @@ import java.io.IOException;
  */
 public class SimpleImageProcessingExample {
 
-  static public void main(String[] args) throws Exception {
-      ex1();
+  static public void main(String[] args){
+      ex1OnCircles();
   } // EndMain
 
     public static void  ex1(){
