@@ -6,7 +6,7 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
 
     private final String PRIVATE_FILE_PATH = "./TEST_IMAGES/ENGINETPM.png";
 
-    private final boolean DEBUG = true;
+    public final static boolean DEBUG = true;
 
     // reading image in
     BufferedImage inImg;
@@ -111,7 +111,7 @@ public class SingleThreadedImageFilteringEngine implements IImageFilteringEngine
         num = 0;
     }
 
-    private void printDebug(String msg) {
+    public static void printDebug(String msg) {
         if(DEBUG)
             System.out.println("ImageFilteringEngine_DEBUG |> " + msg);
     }

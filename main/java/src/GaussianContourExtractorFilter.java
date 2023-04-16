@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class GaussianContourExtractorFilter implements IFilter {
@@ -10,32 +11,24 @@ public class GaussianContourExtractorFilter implements IFilter {
     @Override
     public void applyFilterAtPoint(int x, int y, BufferedImage imgIn, BufferedImage imgOut) {
 
-        double deltaX = 0.0;
-        double deltaY = 0.0;
 
-        int newX;
-        int newY;
 
-        for (int dx = -getMargin(); dx < getMargin(); dx++) {
-            for (int dy = -getMargin(); dy < getMargin(); dy++) {
-                newX = x + dx;
-                newY = y + dy;
-                int newRgb = imgIn.getRGB(newX, newY);
-                int newBlue = newRgb & 0x000000FF;
-                double gaussianWeight = Math.exp(-0.25 * ((dx * dx) + (dy * dy)));
-
-                deltaX += Math.signum(dx) * newBlue * gaussianWeight;
-                deltaY += Math.signum(dy) * newBlue * gaussianWeight;
+        double gradX = 0;
+        double gradY = 0;
+        for (int dx=-5; dx < 6;dx++){
+            for (int dy=-5; dy < 6; dy++){
+                    double exp = Math.exp((Math.pow(dx, 2)+Math.pow(dy,2))/-4);
+                    int blue = imgIn.getRGB(x+dx,y+dy) & 0x000000FF;
+                    gradX += Math.signum(dx)*blue*exp;
+                    gradY += Math.signum(dy)*blue*exp;
             }
-
         }
-
-        double gradientNorm = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        int newBlue = (int) Math.max(0, 255 - 0.5 * gradientNorm);
-
-        int newRgb = (newBlue << 16) | (newBlue << 8) | newBlue;
-
-        imgOut.setRGB(x-getMargin(), y-getMargin(), newRgb);
+        //System.out.println("gradX : "+gradX+" gradY : "+gradY);
+        double grad = Math.sqrt(Math.pow(gradX,2)+Math.pow(gradY,2));
+        //System.out.println("grad value : " + grad);
+        int blue = Math.max(0,255 - (int)grad/2);
+        int newRgb = ( ( (blue << 8) | blue ) << 8 ) | blue ;
+        imgOut.setRGB(x-getMargin(),y-getMargin(),newRgb);
 
     }
 }
