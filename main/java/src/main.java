@@ -16,11 +16,35 @@ import java.io.IOException;
 /**
  * @author Francois Taiani   <francois.taiani@irisa.fr>
  */
-public class SimpleImageProcessingExample {
+public class main {
 
   static public void main(String[] args){
-      ex1OnCircles();
+      //time the execution
+      long startTime = System.currentTimeMillis();
+      //ex1();
+      String res = "SingleThreaded took " + (System.currentTimeMillis() - startTime) + " milliseconds\n";
+
+      startTime = System.currentTimeMillis();
+      ex2();
+      System.out.println(res + "MultiThreaded took " + (System.currentTimeMillis() - startTime) + " milliseconds");
   } // EndMain
+
+
+    public static void ex2(){
+        try{
+
+            IImageFilteringEngine im = new MultiThreadedImageFilteringEngine(10);
+            im.loadImage("./TEST_IMAGES/15226222451_5fd668d81a_c.jpg");
+            im.applyFilter(new GrayLevelFilter());
+            im.applyFilter(new GaussianContourExtractorFilter());
+            im.writeOutPngImage("./TEST_IMAGES/15226222451_5fd668d81a_c_gaussian_contour.png");
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
     public static void  ex1(){
         try{
@@ -43,6 +67,7 @@ public class SimpleImageProcessingExample {
 
             IImageFilteringEngine im = new SingleThreadedImageFilteringEngine();
             im.loadImage("./TEST_IMAGES/FourCircles.png");
+
             im.applyFilter(new GrayLevelFilter());
             im.applyFilter(new GaussianContourExtractorFilter());
 
