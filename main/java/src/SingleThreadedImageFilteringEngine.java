@@ -7,8 +7,16 @@ public class SingleThreadedImageFilteringEngine extends FilteringEngineSkeleton 
     super();
   }
 
+  /**
+   * This method applies the filter to the image by processing each pixel by the filter given
+   * @param filter
+   * @param inImg_
+   * @param outImg_
+   */
   @Override
   public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_) {
+
+    //this part is here to be sure the output image is in the bounds
     int max_X = inImg_.getWidth() - ((filter.getMargin()));
     int max_Y = inImg_.getHeight() - ((filter.getMargin()));
     int min_X = filter.getMargin();

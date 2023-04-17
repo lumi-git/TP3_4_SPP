@@ -20,6 +20,11 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
 
   }
 
+  /**
+   *
+   * Create a new worker based on the number wanted
+   *
+   */
   private void initWorkers() {
     workers = new ArrayList<ApplyingWorker>();
     for (int i = 0; i < numWorkers; i++) {
@@ -27,6 +32,17 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
     }
   }
 
+  /**
+   *
+   * Set up the workers with the filter, the input image, the output image and the number of workers
+   *
+   * Based on the number of workers needed, each worker will be assigned a different part of the image to filter
+   *
+   * @param filter
+   * @param outImg
+   * @param inImg
+   * @param numWorkers
+   */
   private void setupWorkers(IFilter filter, BufferedImage outImg, BufferedImage inImg,
       int numWorkers) {
     int imgWidth = inImg.getWidth();
@@ -71,6 +87,11 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
     }
   }
 
+  /**
+   *
+   * Start the workers and wait for all of them to finish
+   *
+   */
   private void startWorkers() {
 
     for (ApplyingWorker w : workers) {
@@ -87,6 +108,7 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
     }
 
   }
+
 
   @Override
   public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_) {

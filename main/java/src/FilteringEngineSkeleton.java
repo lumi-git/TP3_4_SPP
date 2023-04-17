@@ -23,6 +23,14 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
   }
 
 
+  /**
+   * Given a filter, apply it to the image.
+   *
+   * This methode takes in account if others of filters that has been applied before by applying it to a TMP image.
+   *
+   * The actual computation is done by the runFilter method.
+   *
+   */
   @Override
   public void applyFilter(IFilter someFilter) {
     Utils.printDebug("StartApplying Filter " + num);
@@ -56,8 +64,24 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
 
   }
 
+  /**
+   * Run the filter on the image. This method is abstract and must be implemented by the child class.
+   *
+   * You Have to take in account that the filter can have a margin and can lead to bounds errors if not bounded before.
+   *
+   * It is called by the applyFilter method.
+   *
+   * @param someFilter
+   * @param inImg
+   * @param outImg
+   */
   public abstract void runFilter(IFilter someFilter, BufferedImage inImg, BufferedImage outImg);
-
+  /**
+   * Load an image from a file.
+   *
+   * @param inputImage
+   * @throws Exception
+   */
   @Override
   public void loadImage(String inputImage) throws Exception {
     inImg = ImageIO.read(new File(inputImage));
@@ -65,6 +89,12 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
     reset();
   }
 
+  /**
+   * Write the image to a file.
+   *
+   * @param outFile
+   * @throws Exception
+   */
   @Override
   public void writeOutPngImage(String outFile) throws Exception {
     File f = new File(outFile);
@@ -72,6 +102,13 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
     Utils.printDebug("Output image written at : " + outFile);
   }
 
+
+
+  /**
+   * Set the image to be filtered.
+   *
+   * @param newImg
+   */
   @Override
   public void setImg(BufferedImage newImg) {
     inImg = newImg;
@@ -80,6 +117,11 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
   }
 
 
+  /**
+   * Get the image that has been filtered.
+   *
+   * @return
+   */
   @Override
   public BufferedImage getImg() {
     reset();
@@ -88,6 +130,13 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
   }
 
 
+  /**
+   * Initialize the output image based on the filter that will be applied on the input.
+   *
+   * Can lead to bounds errors that you have to take in account.
+   *
+   * @param margin
+   */
   protected void setOutImg(int margin) {
     outImg = new BufferedImage(inImg.getWidth() - (margin * 2),
         inImg.getHeight() - (margin * 2),
@@ -95,6 +144,12 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
 
   }
 
+  /**
+   * Reset the number of filters applied.
+   *
+   * Used when the input image is changed.
+   *
+   */
   protected void reset() {
     num = 0;
   }
