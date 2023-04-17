@@ -21,7 +21,7 @@ public class main {
   static public void main(String[] args){
       //time the execution
       long startTime = System.currentTimeMillis();
-      //ex1();
+      ex1();
       String res = "SingleThreaded took " + (System.currentTimeMillis() - startTime) + " milliseconds\n";
 
       startTime = System.currentTimeMillis();
@@ -44,7 +44,22 @@ public class main {
             e.printStackTrace();
         }
     }
+    public static void ex2_Circles(){
+        try{
 
+            IImageFilteringEngine im = new MultiThreadedImageFilteringEngine(10);
+            im.loadImage("./TEST_IMAGES/FourCircles.png");
+
+            im.applyFilter(new GrayLevelFilter());
+            im.applyFilter(new GaussianContourExtractorFilter());
+
+            im.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public static void  ex1(){
         try{

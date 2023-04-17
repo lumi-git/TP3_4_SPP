@@ -82,7 +82,6 @@ public class ApplyingWorker extends Thread {
       endY = max_Y;
     }
 
-
     // generating new image from original
     for (int x = startX; x < endX; x++) {
       for (int y = startY; y < endY; y++) {
@@ -93,6 +92,5 @@ public class ApplyingWorker extends Thread {
     } // EndFor x
     MultiThreadedImageFilteringEngine.printDebug("Thread "+ this.getName() +" (" + this.startX +" ; "+this.startY +") -> (" + this.endX + " ; "+this.endY + ") done");
   }
-
 
 }
