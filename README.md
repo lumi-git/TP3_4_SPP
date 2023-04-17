@@ -1,6 +1,11 @@
 # TP3_4_SPP
-multithreaded image filtering
+Multithreaded image filtering engine.
 
+# Documentation :
+
+
+> Generated Javadoc 
+> https://lumi-git.github.io/TP3_4_SPP/package-summary.html
 
 
 ## About
