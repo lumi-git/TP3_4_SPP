@@ -16,7 +16,8 @@ public class ApplyingWorker extends Thread {
   private BufferedImage imgOut;
   private IFilter filter;
 
-  public ApplyingWorker(int startX, int startY,int endX,int endY, BufferedImage imgIn, BufferedImage imgOut, IFilter filter,int id) {
+  public ApplyingWorker(int startX, int startY, int endX, int endY, BufferedImage imgIn,
+      BufferedImage imgOut, IFilter filter, int id) {
     super("ApplyingWorker " + id);
     this.startX = startX;
     this.startY = startY;
@@ -63,8 +64,8 @@ public class ApplyingWorker extends Thread {
   @Override
   public void run() {
 
-    int max_X = imgIn.getWidth() - ((filter.getMargin())) ;
-    int max_Y = imgIn.getHeight() - ((filter.getMargin())) ;
+    int max_X = imgIn.getWidth() - ((filter.getMargin()));
+    int max_Y = imgIn.getHeight() - ((filter.getMargin()));
     int min_X = filter.getMargin();
     int min_Y = filter.getMargin();
 
@@ -90,7 +91,9 @@ public class ApplyingWorker extends Thread {
         //lock.unlock();
       } // EndFor y
     } // EndFor x
-    MultiThreadedImageFilteringEngine.printDebug("Thread "+ this.getName() +" (" + this.startX +" ; "+this.startY +") -> (" + this.endX + " ; "+this.endY + ") done");
+    Utils.printDebug(
+        "Thread " + this.getName() + " (" + this.startX + " ; " + this.startY + ") -> (" + this.endX
+            + " ; " + this.endY + ") done");
   }
 
 }
