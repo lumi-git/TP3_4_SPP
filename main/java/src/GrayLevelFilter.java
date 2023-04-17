@@ -1,5 +1,10 @@
 import java.awt.image.BufferedImage;
 
+/**
+ * @author Ronan tremoureux
+ *
+ *
+ */
 public class GrayLevelFilter implements IFilter {
 
   @Override
