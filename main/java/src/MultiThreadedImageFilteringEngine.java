@@ -38,10 +38,10 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    *
    * Based on the number of workers needed, each worker will be assigned a different part of the image to filter
    *
-   * @param filter
-   * @param outImg
-   * @param inImg
-   * @param numWorkers
+   * @param filter The filter to apply
+   * @param outImg The output image
+   * @param inImg The input image
+   * @param numWorkers The number of workers
    */
   private void setupWorkers(IFilter filter, BufferedImage outImg, BufferedImage inImg,
       int numWorkers) {
@@ -108,6 +108,7 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
     }
 
   }
+
 
 
   @Override

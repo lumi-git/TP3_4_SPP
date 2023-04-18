@@ -9,9 +9,9 @@ public class SingleThreadedImageFilteringEngine extends FilteringEngineSkeleton 
 
   /**
    * This method applies the filter to the image by processing each pixel by the filter given
-   * @param filter
-   * @param inImg_
-   * @param outImg_
+   * @param filter The filter to apply
+   * @param inImg_ The input image
+   * @param outImg_ The output image
    */
   @Override
   public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_) {
