@@ -13,14 +13,14 @@ import java.awt.image.BufferedImage;
  */
 public interface IImageFilteringEngine {
 
-  public void loadImage(String inputImage) throws Exception;
+    public void loadImage(String inputImage) throws Exception;
 
-  public void writeOutPngImage(String outFile) throws Exception;
+    public void writeOutPngImage(String outFile) throws Exception;
 
-  public void setImg(BufferedImage newImg);
+    public void setImg(BufferedImage newImg);
 
-  public BufferedImage getImg();
+    public BufferedImage getImg();
 
-  public void applyFilter(IFilter someFilter);
+    public void applyFilter(IFilter someFilter);
 
 } // EndInterface IImageFilteringEngine

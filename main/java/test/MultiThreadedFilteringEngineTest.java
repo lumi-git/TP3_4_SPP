@@ -4,124 +4,124 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
 import org.junit.Test;
 
 public class MultiThreadedFilteringEngineTest {
 
-  private IImageFilteringEngine engine = new MultiThreadedImageFilteringEngine(
-      10); // Replace 'MyImageFilteringEngine' with your actual implementation
+    private IImageFilteringEngine engine = new MultiThreadedImageFilteringEngine(
+            10); // Replace 'MyImageFilteringEngine' with your actual implementation
 
-  @Test
-  public void testGaussianContourExtractorFilter() throws IOException {
+    @Test
+    public void testGaussianContourExtractorFilter() throws IOException {
 
-    BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
-    BufferedImage expectedOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gaussian_contour.png"));
+        BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
+        BufferedImage expectedOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gaussian_contour.png"));
 
-    engine.setImg(inputImage);
-    engine.applyFilter(new GrayLevelFilter());
-    engine.applyFilter(new GaussianContourExtractorFilter());
+        engine.setImg(inputImage);
+        engine.applyFilter(new GrayLevelFilter());
+        engine.applyFilter(new GaussianContourExtractorFilter());
 
-    try {
-      engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    BufferedImage actualOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
-
-    assertEquals("the width of the images are not the same", expectedOutputImage.getWidth(),
-        actualOutputImage.getWidth());
-
-    assertEquals("the height of the images are not the same", expectedOutputImage.getHeight(),
-        actualOutputImage.getHeight());
-
-    assertImagesEqual_Pixels(expectedOutputImage, actualOutputImage);
-  }
-
-  @Test
-  public void TestSizeAfterGaussianContour() throws IOException {
-    BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
-    BufferedImage expectedOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gaussian_contour.png"));
-
-    engine.setImg(inputImage);
-    engine.applyFilter(new GrayLevelFilter());
-    engine.applyFilter(new GaussianContourExtractorFilter());
-
-    try {
-      engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    BufferedImage actualOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
-
-    WriteDifImages(expectedOutputImage, actualOutputImage);
-
-    assertEquals("the width of the images are not the same", expectedOutputImage.getWidth(),
-        actualOutputImage.getWidth());
-
-    assertEquals("the height of the images are not the same", expectedOutputImage.getHeight(),
-        actualOutputImage.getHeight());
-
-  }
-
-  @Test
-  public void testGrayLevelFilter() throws IOException {
-
-    BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
-    BufferedImage expectedOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gray.png"));
-
-    engine.setImg(inputImage);
-    engine.applyFilter(new GrayLevelFilter());
-
-    try {
-      engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gray_TEST.png");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    BufferedImage actualOutputImage = ImageIO.read(
-        new File("./TEST_IMAGES/FourCircles_gray_TEST.png"));
-
-    assertImagesEqual_Pixels(expectedOutputImage, actualOutputImage);
-  }
-
-
-  private void WriteDifImages(BufferedImage expected, BufferedImage actual) {
-    // write a new image with red pixel if the pixels are different
-
-    BufferedImage dif = new BufferedImage(expected.getWidth(), expected.getHeight(),
-        BufferedImage.TYPE_INT_RGB);
-
-    for (int x = 0; x < expected.getWidth(); x++) {
-      for (int y = 0; y < expected.getHeight(); y++) {
-        if (expected.getRGB(x, y) != actual.getRGB(x, y)) {
-          dif.setRGB(x, y, 0xFF0000);
+        try {
+            engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-      }
+
+        BufferedImage actualOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
+
+        assertEquals("the width of the images are not the same", expectedOutputImage.getWidth(),
+                actualOutputImage.getWidth());
+
+        assertEquals("the height of the images are not the same", expectedOutputImage.getHeight(),
+                actualOutputImage.getHeight());
+
+        assertImagesEqual_Pixels(expectedOutputImage, actualOutputImage);
     }
 
-    try {
-      ImageIO.write(dif, "png", new File("./TEST_IMAGES/dif.png"));
-    } catch (IOException e) {
-      e.printStackTrace();
+    @Test
+    public void TestSizeAfterGaussianContour() throws IOException {
+        BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
+        BufferedImage expectedOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gaussian_contour.png"));
+
+        engine.setImg(inputImage);
+        engine.applyFilter(new GrayLevelFilter());
+        engine.applyFilter(new GaussianContourExtractorFilter());
+
+        try {
+            engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage actualOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
+
+        WriteDifImages(expectedOutputImage, actualOutputImage);
+
+        assertEquals("the width of the images are not the same", expectedOutputImage.getWidth(),
+                actualOutputImage.getWidth());
+
+        assertEquals("the height of the images are not the same", expectedOutputImage.getHeight(),
+                actualOutputImage.getHeight());
+
+    }
+
+    @Test
+    public void testGrayLevelFilter() throws IOException {
+
+        BufferedImage inputImage = ImageIO.read(new File("./TEST_IMAGES/FourCircles.png"));
+        BufferedImage expectedOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gray.png"));
+
+        engine.setImg(inputImage);
+        engine.applyFilter(new GrayLevelFilter());
+
+        try {
+            engine.writeOutPngImage("./TEST_IMAGES/FourCircles_gray_TEST.png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedImage actualOutputImage = ImageIO.read(
+                new File("./TEST_IMAGES/FourCircles_gray_TEST.png"));
+
+        assertImagesEqual_Pixels(expectedOutputImage, actualOutputImage);
     }
 
 
+    private void WriteDifImages(BufferedImage expected, BufferedImage actual) {
+        // write a new image with red pixel if the pixels are different
 
-  }
+        BufferedImage dif = new BufferedImage(expected.getWidth(), expected.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
 
-  private void assertImagesEqual_Pixels(BufferedImage expected, BufferedImage actual) {
+        for (int x = 0; x < expected.getWidth(); x++) {
+            for (int y = 0; y < expected.getHeight(); y++) {
+                if (expected.getRGB(x, y) != actual.getRGB(x, y)) {
+                    dif.setRGB(x, y, 0xFF0000);
+                }
+            }
+        }
 
-    for (int y = 0; y < expected.getHeight(); y++) {
-      for (int x = 0; x < expected.getWidth(); x++) {
-        assertEquals("Bug on pixels : " + x + " " + y, Integer.toHexString(expected.getRGB(x, y)), Integer.toHexString(actual.getRGB(x, y)));
-      }
+        try {
+            ImageIO.write(dif, "png", new File("./TEST_IMAGES/dif.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
-  }
+
+    private void assertImagesEqual_Pixels(BufferedImage expected, BufferedImage actual) {
+
+        for (int y = 0; y < expected.getHeight(); y++) {
+            for (int x = 0; x < expected.getWidth(); x++) {
+                assertEquals("Bug on pixels : " + x + " " + y, Integer.toHexString(expected.getRGB(x, y)), Integer.toHexString(actual.getRGB(x, y)));
+            }
+        }
+    }
 }
