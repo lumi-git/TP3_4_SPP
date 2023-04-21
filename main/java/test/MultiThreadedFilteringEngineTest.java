@@ -59,6 +59,8 @@ public class MultiThreadedFilteringEngineTest {
     BufferedImage actualOutputImage = ImageIO.read(
         new File("./TEST_IMAGES/FourCircles_gaussian_contour_TEST.png"));
 
+    WriteDifImages(expectedOutputImage, actualOutputImage);
+
     assertEquals("the width of the images are not the same", expectedOutputImage.getWidth(),
         actualOutputImage.getWidth());
 
@@ -89,11 +91,36 @@ public class MultiThreadedFilteringEngineTest {
     assertImagesEqual_Pixels(expectedOutputImage, actualOutputImage);
   }
 
-  private void assertImagesEqual_Pixels(BufferedImage expected, BufferedImage actual) {
+
+  private void WriteDifImages(BufferedImage expected, BufferedImage actual) {
+    // write a new image with red pixel if the pixels are different
+
+    BufferedImage dif = new BufferedImage(expected.getWidth(), expected.getHeight(),
+        BufferedImage.TYPE_INT_RGB);
 
     for (int x = 0; x < expected.getWidth(); x++) {
       for (int y = 0; y < expected.getHeight(); y++) {
-        assertEquals("Bug on pixels : " + x + " " + y, expected.getRGB(x, y), actual.getRGB(x, y));
+        if (expected.getRGB(x, y) != actual.getRGB(x, y)) {
+          dif.setRGB(x, y, 0xFF0000);
+        }
+      }
+    }
+
+    try {
+      ImageIO.write(dif, "png", new File("./TEST_IMAGES/dif.png"));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
+
+  }
+
+  private void assertImagesEqual_Pixels(BufferedImage expected, BufferedImage actual) {
+
+    for (int y = 0; y < expected.getHeight(); y++) {
+      for (int x = 0; x < expected.getWidth(); x++) {
+        assertEquals("Bug on pixels : " + x + " " + y, Integer.toHexString(expected.getRGB(x, y)), Integer.toHexString(actual.getRGB(x, y)));
       }
     }
   }

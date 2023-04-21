@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -49,9 +50,11 @@ public class ApplyingWorker extends Thread {
    */
   private IFilter filter;
 
+
   public ApplyingWorker(int startX, int startY, int endX, int endY, BufferedImage imgIn,
-      BufferedImage imgOut, IFilter filter, int id) {
+                        BufferedImage imgOut, IFilter filter, int id, CyclicBarrier barrier) {
     super("ApplyingWorker " + id);
+
     this.startX = startX;
     this.startY = startY;
     this.endX = endX;
@@ -61,8 +64,9 @@ public class ApplyingWorker extends Thread {
     this.filter = filter;
   }
 
-  public ApplyingWorker(int id) {
+  public ApplyingWorker(int id, CyclicBarrier barrier) {
     super("ApplyingWorker " + id);
+
   }
 
 
@@ -131,9 +135,7 @@ public class ApplyingWorker extends Thread {
     // generating new image from original by applying the filter
     for (int x = startX; x < endX; x++) {
       for (int y = startY; y < endY; y++) {
-        //lock.lock();
         filter.applyFilterAtPoint(x, y, imgIn, imgOut);
-        //lock.unlock();
       } // EndFor y
     } // EndFor x
 
@@ -141,6 +143,13 @@ public class ApplyingWorker extends Thread {
     Utils.printDebug(
         "Thread " + this.getName() + " (" + this.startX + " ; " + this.startY + ") -> (" + this.endX
             + " ; " + this.endY + ") done");
+
+    try {
+      Utils.printDebug("Thread " + this.getName() + " waiting for others at the barrier");
+      MultiThreadedImageFilteringEngine.barrier.await();
+        } catch (Exception e) {
+        e.printStackTrace();
+    }
   }
 
 }

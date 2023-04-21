@@ -1,7 +1,16 @@
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.concurrent.CyclicBarrier;
 
 public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
+
+
+  public static CyclicBarrier barrier;
+
+
+  Runnable barrierAction = () -> {
+      System.out.println("Barrier reached");
+  };
 
   int numWorkers;
   ArrayList<ApplyingWorker> workers;
@@ -9,15 +18,16 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
   MultiThreadedImageFilteringEngine(int k) {
     super();
     numWorkers = k;
+    barrier = new CyclicBarrier(numWorkers,barrierAction);
     initWorkers();
   }
 
   MultiThreadedImageFilteringEngine() {
     super();
+
     numWorkers = 1;
+    barrier = new CyclicBarrier(numWorkers,barrierAction);
     initWorkers();
-
-
   }
 
   /**
@@ -26,9 +36,10 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    *
    */
   private void initWorkers() {
+    barrier = new CyclicBarrier(numWorkers,barrierAction);
     workers = new ArrayList<ApplyingWorker>();
     for (int i = 0; i < numWorkers; i++) {
-      workers.add(new ApplyingWorker(i));
+      workers.add(new ApplyingWorker(i,barrier));
     }
   }
 
@@ -93,13 +104,11 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    *
    */
   private void startWorkers() {
-
     for (ApplyingWorker w : workers) {
       w.start();
     }
 
     for (ApplyingWorker w : workers) {
-
       try {
         w.join();
       } catch (InterruptedException e) {

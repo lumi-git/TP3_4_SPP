@@ -12,20 +12,31 @@ public class GaussianContourExtractorFilter implements IFilter {
 
     double gradX = 0;
     double gradY = 0;
-    for (int dx = -5; dx < 6; dx++) {
-      for (int dy = -5; dy < 6; dy++) {
+    for (int dy = -5; dy < 6; dy++) {
+      for (int dx = -5; dx < 6; dx++) {
         double exp = Math.exp((Math.pow(dx, 2) + Math.pow(dy, 2)) / -4);
         int blue = imgIn.getRGB(x + dx, y + dy) & 0x000000FF;
-        gradX += Math.signum(dx) * blue * exp;
-        gradY += Math.signum(dy) * blue * exp;
+        gradX += (sign(dx) * blue * exp);
+        gradY += (sign(dy) * blue * exp);
       }
     }
     //System.out.println("gradX : "+gradX+" gradY : "+gradY);
-    double grad = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2));
+    double norm = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2));
     //System.out.println("grad value : " + grad);
-    int blue = Math.max(0, 255 - (int) grad / 2);
-    int newRgb = (((blue << 8) | blue) << 8) | blue;
+    int blue = (int) Math.round(Math.max(0, 255 - norm / 2) );
+    int shade = blue & 0x000000FF;
+    int newRgb = shade << 16 | shade << 8 | shade;
     imgOut.setRGB(x - getMargin(), y - getMargin(), newRgb);
 
   }
+
+  public int sign(int value ){
+    if ( value < 0 )
+      return -1;
+    else if ( value > 0 )
+        return 1;
+    else
+      return 0;
+  }
+
 }
