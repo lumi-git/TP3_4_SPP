@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -52,7 +53,7 @@ public class ApplyingWorker extends Thread {
 
 
   public ApplyingWorker(int startX, int startY, int endX, int endY, BufferedImage imgIn,
-                        BufferedImage imgOut, IFilter filter, int id, CyclicBarrier barrier) {
+                        BufferedImage imgOut, IFilter filter, int id) {
     super("ApplyingWorker " + id);
 
     this.startX = startX;
@@ -64,7 +65,7 @@ public class ApplyingWorker extends Thread {
     this.filter = filter;
   }
 
-  public ApplyingWorker(int id, CyclicBarrier barrier) {
+  public ApplyingWorker(int id) {
     super("ApplyingWorker " + id);
 
   }
@@ -113,43 +114,51 @@ public class ApplyingWorker extends Thread {
   @Override
   public void run() {
 
-    int max_X = imgIn.getWidth() - ((filter.getMargin()));
-    int max_Y = imgIn.getHeight() - ((filter.getMargin()));
-    int min_X = filter.getMargin();
-    int min_Y = filter.getMargin();
 
-    //if the range is out of the bound, make it fit
-    if (startX < min_X) {
-      startX = min_X;
-    }
-    if (startY < min_Y) {
-      startY = min_Y;
-    }
-    if (endX > max_X) {
-      endX = max_X;
-    }
-    if (endY > max_Y) {
-      endY = max_Y;
-    }
+      int max_X = imgIn.getWidth() - ((filter.getMargin()));
+      int max_Y = imgIn.getHeight() - ((filter.getMargin()));
+      int min_X = filter.getMargin();
+      int min_Y = filter.getMargin();
 
-    // generating new image from original by applying the filter
-    for (int x = startX; x < endX; x++) {
-      for (int y = startY; y < endY; y++) {
-        filter.applyFilterAtPoint(x, y, imgIn, imgOut);
-      } // EndFor y
-    } // EndFor x
+      //if the range is out of the bound, make it fit
+      if (startX < min_X) {
+        startX = min_X;
+      }
+      if (startY < min_Y) {
+        startY = min_Y;
+      }
+      if (endX > max_X) {
+        endX = max_X;
+      }
+      if (endY > max_Y) {
+        endY = max_Y;
+      }
 
-    //prints a message when finished
-    Utils.printDebug(
-        "Thread " + this.getName() + " (" + this.startX + " ; " + this.startY + ") -> (" + this.endX
-            + " ; " + this.endY + ") done");
+      // generating new image from original by applying the filter
+      for (int x = startX; x < endX; x++) {
+        for (int y = startY; y < endY; y++) {
+          filter.applyFilterAtPoint(x, y, imgIn, imgOut);
+        } // EndFor y
+      } // EndFor x
+
+      //prints a message when finished
+      Utils.printDebug(
+          "Thread " + this.getName() + " (" + this.startX + " ; " + this.startY + ") -> (" + this.endX
+              + " ; " + this.endY + ") done");
+
+      Utils.printDebug("Thread " + this.getName() + " waiting for others at the barrier");
 
     try {
-      Utils.printDebug("Thread " + this.getName() + " waiting for others at the barrier");
       MultiThreadedImageFilteringEngine.barrier.await();
-        } catch (Exception e) {
-        e.printStackTrace();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (BrokenBarrierException e) {
+      throw new RuntimeException(e);
     }
+
+    Utils.printDebug("Thread " + this.getName() + " passed the barrier");
+
+
   }
 
 }

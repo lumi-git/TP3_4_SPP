@@ -1,5 +1,8 @@
+import jdk.jshell.execution.Util;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
@@ -9,7 +12,7 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
 
 
   Runnable barrierAction = () -> {
-      System.out.println("Barrier reached");
+      System.out.println("All threads at the barrier. release the barrier");
   };
 
   int numWorkers;
@@ -36,10 +39,11 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    *
    */
   private void initWorkers() {
-    barrier = new CyclicBarrier(numWorkers,barrierAction);
+    Utils.printDebug("Creating " + numWorkers + " workers");
+
     workers = new ArrayList<ApplyingWorker>();
     for (int i = 0; i < numWorkers; i++) {
-      workers.add(new ApplyingWorker(i,barrier));
+      workers.add(new ApplyingWorker(i));
     }
   }
 
@@ -56,6 +60,9 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    */
   private void setupWorkers(IFilter filter, BufferedImage outImg, BufferedImage inImg,
       int numWorkers) {
+
+    Utils.printDebug("Setting up workers");
+
     int imgWidth = inImg.getWidth();
     int imgHeight = inImg.getHeight();
     int chunkWidth = imgWidth / numWorkers;
@@ -104,29 +111,33 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
    *
    */
   private void startWorkers() {
+
     for (ApplyingWorker w : workers) {
+      Utils.printDebug("Starting worker " + w.getName());
       w.start();
     }
 
-    for (ApplyingWorker w : workers) {
-      try {
-        w.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
+    Utils.printDebug("All workers started");
 
   }
 
-
-
   @Override
-  public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_) {
+  public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_){
+
     initWorkers();
     setupWorkers(filter, outImg_, inImg_, numWorkers);
     startWorkers();
 
-  }
+    // Wait for all workers to finish
+    try {
+        barrier.await();
+        } catch (InterruptedException e) {
+        e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+        e.printStackTrace();
+    }
 
+
+  }
 
 }
