@@ -5,10 +5,10 @@
  *
  * @author Francois Taiani   <francois.taiani@irisa.fr> $Id$
  */
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /**
@@ -17,24 +17,72 @@ import javax.imageio.ImageIO;
 public class main {
 
     static public void main(String[] args) {
-        //time the execution
-        long startTime = System.currentTimeMillis();
-        ex1();
-        String res =
-                "SingleThreaded took " + (System.currentTimeMillis() - startTime) + " milliseconds\n";
 
-        startTime = System.currentTimeMillis();
-        ex2();
-        System.out.println(
-                res + "MultiThreaded took " + (System.currentTimeMillis() - startTime) + " milliseconds");
-    } // EndMain
+        //for a silent test, set the debug to false
+        SETTINGS.DEBUG = true;
+
+        IFilter[] filters = {new GrayLevelFilter(), new GaussianContourExtractorFilter()};
+
+        ArrayList<Double> originalSeqTimes1 = new ArrayList<Double>();
+        ArrayList<Double> multiThreadTimes1 = new ArrayList<Double>();
+
+        double SingleTrheadedTime1 =  TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[0]);
+
+
+        for (int i = 1; i <= 10; i++) {
+            double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[0]);
+            originalSeqTimes1.add(SingleTrheadedTime1);
+            multiThreadTimes1.add(multiThreadTime);
+        }
+
+        // Measurements for filter 2 (GaussianContourExtractorFilter)
+        ArrayList<Double> originalSeqTimes2 = new ArrayList<Double>();
+        ArrayList<Double> multiThreadTimes2 = new ArrayList<Double>();
+
+        double SingleTrheadedTime2 =  TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[1]);
+
+        for (int i = 1; i <= 10; i++) {
+
+            double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[1]);
+            originalSeqTimes2.add(SingleTrheadedTime2);
+            multiThreadTimes2.add(multiThreadTime);
+        }
+
+
+        System.out.println("Times multi : " + multiThreadTimes1);
+        System.out.println("Times single : " + originalSeqTimes1);
+        System.out.println("Times multi : " + multiThreadTimes2);
+        System.out.println("Times single : " + originalSeqTimes2);
+
+
+        Utils.plotGraph(originalSeqTimes1, multiThreadTimes1);
+        Utils.plotGraph(originalSeqTimes2, multiThreadTimes2);
+
+    }
+
+
+
+
+    public static double TimePerformFiltersOnImageWithName(String imageName, FilteringEngineSkeleton engine, IFilter filter) {
+        double time = 0;
+        try {
+            engine.loadImage(imageName);
+            engine.applyFilter(filter);
+            time = engine.getExeTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return time;
+    }
+
+
 
 
     public static void ex2() {
 
         try {
 
-            IImageFilteringEngine im = new MultiThreadedImageFilteringEngine(10);
+            IImageFilteringEngine im = new MultiThreadedImageFilteringEngine(2);
             im.loadImage("./TEST_IMAGES/15226222451_5fd668d81a_c.jpg");
             im.applyFilter(new GrayLevelFilter());
             im.applyFilter(new GaussianContourExtractorFilter());

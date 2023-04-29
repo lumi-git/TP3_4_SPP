@@ -124,14 +124,21 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
         startWorkers();
 
         // Wait for all workers to finish
+        for (ApplyingWorker w : workers) {
+            try {
+                w.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        /*
         try {
             barrier.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
-        }
-
+        }*/
 
     }
 

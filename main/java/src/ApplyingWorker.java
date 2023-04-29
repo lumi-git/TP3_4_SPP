@@ -142,13 +142,13 @@ public class ApplyingWorker extends Thread {
 
         Utils.printDebug("Thread " + this.getName() + " waiting for others at the barrier");
 
-        try {
+        /*try {
             MultiThreadedImageFilteringEngine.barrier.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (BrokenBarrierException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
         Utils.printDebug("Thread " + this.getName() + " passed the barrier");
 

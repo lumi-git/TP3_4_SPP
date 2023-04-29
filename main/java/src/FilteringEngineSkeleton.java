@@ -14,12 +14,15 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
     File tmpFile;
     int num;
 
+    double ExeTime;
+
 
     FilteringEngineSkeleton() {
         tmpFile = new File(PRIVATE_FILE_PATH);
         tmpFile.deleteOnExit();
         num = 1;
         outImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        ExeTime = 0;
     }
 
 
@@ -32,10 +35,12 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
      */
     @Override
     public void applyFilter(IFilter someFilter) {
+
         Utils.printDebug("StartApplying Filter " + num);
         Utils.printDebug("Filter Info : " + someFilter.getClass().getName() + " with margin : "
                 + someFilter.getMargin());
         // generating new image from original
+        ExeTime -= System.currentTimeMillis()/1000.0;
         if (num == 1) {
             setOutImg(someFilter.getMargin());
             runFilter(someFilter, inImg, outImg);
@@ -58,8 +63,10 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
                 e.printStackTrace();
             }
         }
+        ExeTime += System.currentTimeMillis()/1000.0;
         Utils.printDebug("EndApplying Filter " + num);
         num++;
+
 
     }
 
@@ -150,7 +157,11 @@ public abstract class FilteringEngineSkeleton implements IImageFilteringEngine {
      */
     protected void reset() {
         num = 1;
+        ExeTime = 0;
     }
 
+    public double getExeTime() {
+        return ExeTime;
+    }
 
 }
