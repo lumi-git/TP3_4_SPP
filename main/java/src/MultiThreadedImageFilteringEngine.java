@@ -1,14 +1,9 @@
-import jdk.jshell.execution.Util;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.BrokenBarrierException;
 
 public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
-
-
-    public static CyclicBarrier barrier;
 
 
     Runnable barrierAction = () -> {
@@ -17,19 +12,14 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
 
     int numWorkers;
     ArrayList<ApplyingWorker> workers;
+    CyclicBarrier startBarrier;
+    CyclicBarrier endBarrier;
 
     MultiThreadedImageFilteringEngine(int k) {
         super();
         numWorkers = k;
-        barrier = new CyclicBarrier(numWorkers, barrierAction);
-        initWorkers();
-    }
-
-    MultiThreadedImageFilteringEngine() {
-        super();
-
-        numWorkers = 1;
-        barrier = new CyclicBarrier(numWorkers, barrierAction);
+        startBarrier = new CyclicBarrier(numWorkers + 1);
+        endBarrier = new CyclicBarrier(numWorkers + 1);
         initWorkers();
     }
 
@@ -41,7 +31,7 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
 
         workers = new ArrayList<ApplyingWorker>();
         for (int i = 0; i < numWorkers; i++) {
-            workers.add(new ApplyingWorker(i));
+            workers.add(new ApplyingWorker(i, startBarrier, endBarrier));
         }
     }
 
@@ -111,35 +101,22 @@ public class MultiThreadedImageFilteringEngine extends FilteringEngineSkeleton {
             Utils.printDebug("Starting worker " + w.getName());
             w.start();
         }
-
         Utils.printDebug("All workers started");
 
     }
 
     @Override
     public void runFilter(IFilter filter, BufferedImage inImg_, BufferedImage outImg_) {
-
         initWorkers();
         setupWorkers(filter, outImg_, inImg_, numWorkers);
         startWorkers();
 
-        // Wait for all workers to finish
-        for (ApplyingWorker w : workers) {
-            try {
-                w.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        /*
         try {
-            barrier.await();
-        } catch (InterruptedException e) {
+            startBarrier.await(); // Let all threads start processing
+            endBarrier.await();   // Wait for all threads to finish
+        } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
-        } catch (BrokenBarrierException e) {
-            e.printStackTrace();
-        }*/
-
+        }
     }
 
 }

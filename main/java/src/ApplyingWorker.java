@@ -1,8 +1,6 @@
 import java.awt.image.BufferedImage;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.BrokenBarrierException;
 
 /**
  * This class is a thread that will apply a filter to a chunk of the image
@@ -13,7 +11,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ApplyingWorker extends Thread {
 
-    static Lock lock = new ReentrantLock();
+
+    private CyclicBarrier startBarrier;
+    private CyclicBarrier endBarrier;
+
 
     /**
      * The start of the x coordinate of the chunk to process
@@ -64,9 +65,10 @@ public class ApplyingWorker extends Thread {
         this.filter = filter;
     }
 
-    public ApplyingWorker(int id) {
-        super("ApplyingWorker " + id);
-
+    ApplyingWorker(int id, CyclicBarrier startBarrier, CyclicBarrier endBarrier) {
+        super("ApplyingWorker-" + id);
+        this.startBarrier = startBarrier;
+        this.endBarrier = endBarrier;
     }
 
 
@@ -109,6 +111,13 @@ public class ApplyingWorker extends Thread {
      */
     @Override
     public void run() {
+
+        try {
+            startBarrier.await(); // Wait for all threads to be ready to start processing
+        } catch (InterruptedException | BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
         int max_X = imgIn.getWidth() - ((filter.getMargin()));
         int max_Y = imgIn.getHeight() - ((filter.getMargin()));
         int min_X = filter.getMargin();
@@ -141,18 +150,12 @@ public class ApplyingWorker extends Thread {
                         + " ; " + this.endY + ") done");
 
         Utils.printDebug("Thread " + this.getName() + " waiting for others at the barrier");
-
-        /*try {
-            MultiThreadedImageFilteringEngine.barrier.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (BrokenBarrierException e) {
-            throw new RuntimeException(e);
-        }*/
-
+        try {
+            endBarrier.await(); // Signal that this thread has finished processing
+        } catch (InterruptedException | BrokenBarrierException e) {
+            e.printStackTrace();
+        }
         Utils.printDebug("Thread " + this.getName() + " passed the barrier");
-
-
     }
 
 }
