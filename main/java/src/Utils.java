@@ -30,24 +30,24 @@ public class Utils {
     }
 
 
-    public static void plotGraph(ArrayList<Double> originalSeqTimes, ArrayList<Double> multiThreadTimes ){
+    public static void plotGraph(String Title, ArrayList<Double> originalSeqTimes, ArrayList<Double> multiThreadTimes) {
 
-// Create a dataset for filter 2 (GaussianContourExtractorFilter)
+        // Create a dataset for filter 2 (GaussianContourExtractorFilter)
         XYSeriesCollection dataset2 = new XYSeriesCollection();
         XYSeries series2Seq = new XYSeries("Sequential");
         XYSeries series2Mul = new XYSeries("Parallel");
 
-        for(int i = 0; i < originalSeqTimes.size(); i++) {
-            series2Seq.add(i+1, originalSeqTimes.get(i));
-            series2Mul.add(i+1, multiThreadTimes.get(i));
+        for (int i = 0; i < originalSeqTimes.size(); i++) {
+            series2Seq.add(i + 1, originalSeqTimes.get(i));
+            series2Mul.add(i + 1, multiThreadTimes.get(i));
         }
         dataset2.addSeries(series2Seq);
         dataset2.addSeries(series2Mul);
 
 
-// Create chart for filter 2
+        // Create chart for filter 2
         JFreeChart chart2 = ChartFactory.createXYLineChart(
-                "Filter 2 Performance",
+                Title,
                 "Number of Threads",
                 "Time (ms)",
                 dataset2,
@@ -66,7 +66,73 @@ public class Utils {
 
         NumberAxis domainAxis2 = (NumberAxis) plot2.getDomainAxis();
         domainAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        domainAxis2.setRange(1, 10);
+        domainAxis2.setRange(1, originalSeqTimes.size());
+
+        XYSplineRenderer renderer2 = new XYSplineRenderer();
+        renderer2.setSeriesPaint(0, Color.RED);
+        renderer2.setSeriesPaint(1, Color.BLUE);
+        plot2.setRenderer(renderer2);
+
+        ChartFrame frame2 = new ChartFrame("Filter 2", chart2);
+        frame2.pack();
+        frame2.setVisible(true);
+    }
+
+    public static void plotGraphWithImageSize(String Title, ArrayList<Integer> imageSizes, ArrayList<Double> originalSeqTimes, ArrayList<Double> multiThreadTimes) {
+
+        // Create a dataset for filter 2 (GaussianContourExtractorFilter)
+        XYSeriesCollection dataset2 = new XYSeriesCollection();
+        XYSeries series2Seq = new XYSeries("Sequential");
+        XYSeries series2Mul = new XYSeries("Parallel");
+
+        for (int i = 0; i < imageSizes.size(); i++) {
+            series2Seq.add(imageSizes.get(i), originalSeqTimes.get(i));
+            series2Mul.add(imageSizes.get(i), multiThreadTimes.get(i));
+        }
+
+        dataset2.addSeries(series2Seq);
+        dataset2.addSeries(series2Mul);
+
+
+        // Create chart for filter 2
+        JFreeChart chart2 = ChartFactory.createXYLineChart(
+                Title,
+                "Image Size",
+                "Time (ms)",
+                dataset2,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
+        );
+
+        chart2.setBackgroundPaint(Color.white);
+
+        XYPlot plot2 = (XYPlot) chart2.getPlot();
+        plot2.setBackgroundPaint(Color.lightGray);
+        plot2.setDomainGridlinePaint(Color.white);
+        plot2.setRangeGridlinePaint(Color.white);
+
+        NumberAxis domainAxis2 = (NumberAxis) plot2.getDomainAxis();
+        domainAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+        // get the max image size
+        int maxImageSize = 0;
+        for (int i = 0; i < imageSizes.size(); i++) {
+            if (imageSizes.get(i) > maxImageSize) {
+                maxImageSize = imageSizes.get(i);
+            }
+        }
+
+        // get the min image size
+        int minImageSize = imageSizes.get(0);
+        for (int i = 0; i < imageSizes.size(); i++) {
+            if (imageSizes.get(i) < minImageSize) {
+                minImageSize = imageSizes.get(i);
+            }
+        }
+
+        domainAxis2.setRange(minImageSize, maxImageSize);
 
         XYSplineRenderer renderer2 = new XYSplineRenderer();
         renderer2.setSeriesPaint(0, Color.RED);
