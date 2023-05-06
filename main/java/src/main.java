@@ -21,9 +21,9 @@ public class main {
     static public void main(String[] args) {
 
         //for a silent test, set the debug to false
-        SETTINGS.DEBUG = false;
+        SETTINGS.DEBUG = true;
 
-        //Graphs1();
+        Graphs1();
         Graphs2();
 
 
