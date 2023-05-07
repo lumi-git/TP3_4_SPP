@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author Francois Taiani   <francois.taiani@irisa.fr>
@@ -21,9 +23,9 @@ public class main {
     static public void main(String[] args) {
 
         //for a silent test, set the debug to false
-        SETTINGS.DEBUG = true;
+        SETTINGS.DEBUG = false;
 
-        Graphs1();
+        //Graphs1();
         Graphs2();
 
 
@@ -31,33 +33,47 @@ public class main {
 
     public static void Graphs1() {
         int n = 10;
+        int numRuns = 25; // Number of runs for each experiment
         IFilter[] filters = {new GrayLevelFilter(), new GaussianContourExtractorFilter()};
 
-        ArrayList<Double> originalSeqTimes1 = new ArrayList<Double>();
-        ArrayList<Double> multiThreadTimes1 = new ArrayList<Double>();
+        ArrayList<ArrayList<Double>> originalSeqTimes1 = new ArrayList<>();
+        ArrayList<ArrayList<Double>> multiThreadTimes1 = new ArrayList<>();
 
-        double SingleTrheadedTime1 = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[0]);
-
-
-        for (int i = 1; i <= n; i++) {
-            double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[0]);
-            originalSeqTimes1.add(SingleTrheadedTime1);
-            multiThreadTimes1.add(multiThreadTime);
-            System.out.println("GrayFilter Done with " + i + " threads");
+        // Initialize lists of lists
+        for (int i = 0; i <= n; i++) {
+            originalSeqTimes1.add(new ArrayList<>());
+            multiThreadTimes1.add(new ArrayList<>());
         }
 
-        // Measurements for filter 2 (GaussianContourExtractorFilter)
-        ArrayList<Double> originalSeqTimes2 = new ArrayList<Double>();
-        ArrayList<Double> multiThreadTimes2 = new ArrayList<Double>();
+        for (int run = 0; run < numRuns; run++) {
+            double singleThreadedTime1 = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[0]);
 
-        double SingleTrheadedTime2 = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[1]);
+            for (int i = 1; i <= n; i++) {
+                double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[0]);
+                originalSeqTimes1.get(i).add(singleThreadedTime1);
+                multiThreadTimes1.get(i).add(multiThreadTime);
+                System.out.println("GrayFilter Done with " + i + " threads (run " + (run + 1) + "/" + numRuns + ")");
+            }
+        }
 
-        for (int i = 1; i <= n; i++) {
+        ArrayList<ArrayList<Double>> originalSeqTimes2 = new ArrayList<>();
+        ArrayList<ArrayList<Double>> multiThreadTimes2 = new ArrayList<>();
 
-            double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[1]);
-            originalSeqTimes2.add(SingleTrheadedTime2);
-            multiThreadTimes2.add(multiThreadTime);
-            System.out.println("GaussFilter Done with " + i + " threads");
+        // Initialize lists of lists
+        for (int i = 0; i <= n; i++) {
+            originalSeqTimes2.add(new ArrayList<>());
+            multiThreadTimes2.add(new ArrayList<>());
+        }
+
+        for (int run = 0; run < numRuns; run++) {
+            double singleThreadedTime2 = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new SingleThreadedImageFilteringEngine(), filters[1]);
+
+            for (int i = 1; i <= n; i++) {
+                double multiThreadTime = TimePerformFiltersOnImageWithName("./TEST_IMAGES/15226222451_75d515f540_o.jpg", new MultiThreadedImageFilteringEngine(i), filters[1]);
+                originalSeqTimes2.get(i).add(singleThreadedTime2);
+                multiThreadTimes2.get(i).add(multiThreadTime);
+                System.out.println("GaussianFilter Done with " + i + " threads (run " + (run + 1) + "/" + numRuns + ")");
+            }
         }
 
 
@@ -67,12 +83,14 @@ public class main {
         System.out.println("Times single : " + originalSeqTimes2);
 
 
-        Utils.plotGraph("GrayLevelFilter : Performance", originalSeqTimes1, multiThreadTimes1);
-        Utils.plotGraph("GaussianContourExtractorFilter : Performance", originalSeqTimes2, multiThreadTimes2);
+        Utils.plotGraphCat("GrayLevelFilter : Performance", originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
+        Utils.plotGraphCat("GaussianContourExtractorFilter : Performance", originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
     }
+
 
     public static void Graphs2() {
         int n = 4;
+        int numRuns = 25; // Number of runs for each experiment
         IFilter[] filters = {new GrayLevelFilter(), new GaussianContourExtractorFilter()};
 
         String imageFolderPath = "./TEST_IMAGES/";
@@ -88,36 +106,64 @@ public class main {
             }
         }
 
-        ArrayList<Double> originalSeqTimes1 = new ArrayList<Double>();
-        ArrayList<Double> multiThreadTimes1 = new ArrayList<Double>();
+        // Sort image files by size
+        Collections.sort(imageFiles, new Comparator<String>() {
+            public int compare(String file1, String file2) {
+                BufferedImage img1 = null, img2 = null;
+                try {
+                    img1 = ImageIO.read(new File(file1));
+                    img2 = ImageIO.read(new File(file2));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int size1 = img1.getWidth() * img1.getHeight();
+                int size2 = img2.getWidth() * img2.getHeight();
+
+                return Integer.compare(size1, size2);
+            }
+        });
 
 
+        ArrayList<ArrayList<Double>> originalSeqTimes1 = new ArrayList<>();
+        ArrayList<ArrayList<Double>> multiThreadTimes1 = new ArrayList<>();
 
-
-        for (String imageFile : imageFiles) {
-            double SingleTrheadedTime = TimePerformFiltersOnImageWithName(imageFile, new SingleThreadedImageFilteringEngine(), filters[0]);
-            System.out.println("GrayFilter Done with " + imageFile + " with 1 threads");
-            double multiThreadTime = TimePerformFiltersOnImageWithName(imageFile, new MultiThreadedImageFilteringEngine(n), filters[0]);
-            System.out.println("GrayFilter Done with " + imageFile + " with " + n + " threads");
-            originalSeqTimes1.add(SingleTrheadedTime);
-            multiThreadTimes1.add(multiThreadTime);
-
-
+        for (int i = 0; i < imageFiles.size(); i++) {
+            originalSeqTimes1.add(new ArrayList<>());
+            multiThreadTimes1.add(new ArrayList<>());
         }
 
-        ArrayList<Double> originalSeqTimes2 = new ArrayList<Double>();
-        ArrayList<Double> multiThreadTimes2 = new ArrayList<Double>();
-
-
-        for (String imageFile : imageFiles) {
-            double SingleTrheadedTime = TimePerformFiltersOnImageWithName(imageFile, new SingleThreadedImageFilteringEngine(), filters[1]);
-            System.out.println("GaussFilter Done with " + imageFile + " with 1 threads");
-            double multiThreadTime = TimePerformFiltersOnImageWithName(imageFile, new MultiThreadedImageFilteringEngine(n), filters[1]);
-            System.out.println("GaussFilter Done with " + imageFile + " with " + n + " threads");
-            originalSeqTimes2.add(SingleTrheadedTime);
-            multiThreadTimes2.add(multiThreadTime);
+        for (int run = 0; run < numRuns; run++) {
+            for (int i = 0; i < imageFiles.size(); i++) {
+                String imageFile = imageFiles.get(i);
+                double SingleTrheadedTime = TimePerformFiltersOnImageWithName(imageFile, new SingleThreadedImageFilteringEngine(), filters[0]);
+                System.out.println("GrayFilter on " + imageFile + " Done No thread (run " + (run + 1) + "/" + numRuns + ")");
+                double multiThreadTime = TimePerformFiltersOnImageWithName(imageFile, new MultiThreadedImageFilteringEngine(n), filters[0]);
+                System.out.println("GrayFilter on " + imageFile + " Done with " + n + " threads (run " + (run + 1) + "/" + numRuns + ")");
+                originalSeqTimes1.get(i).add(SingleTrheadedTime);
+                multiThreadTimes1.get(i).add(multiThreadTime);
+            }
         }
 
+        ArrayList<ArrayList<Double>> originalSeqTimes2 = new ArrayList<>();
+        ArrayList<ArrayList<Double>> multiThreadTimes2 = new ArrayList<>();
+
+        for (int i = 0; i < imageFiles.size(); i++) {
+            originalSeqTimes2.add(new ArrayList<>());
+            multiThreadTimes2.add(new ArrayList<>());
+        }
+
+        for (int run = 0; run < numRuns; run++) {
+            for (int i = 0; i < imageFiles.size(); i++) {
+                String imageFile = imageFiles.get(i);
+                double SingleTrheadedTime = TimePerformFiltersOnImageWithName(imageFile, new SingleThreadedImageFilteringEngine(), filters[1]);
+                System.out.println("GaussianFilter on " + imageFile + " Done No thread (run " + (run + 1) + "/" + numRuns + ")");
+                double multiThreadTime = TimePerformFiltersOnImageWithName(imageFile, new MultiThreadedImageFilteringEngine(n), filters[1]);
+                System.out.println("GaussianFilter on " + imageFile + " Done with " + n + " threads (run " + (run + 1) + "/" + numRuns + ")");
+                originalSeqTimes2.get(i).add(SingleTrheadedTime);
+                multiThreadTimes2.get(i).add(multiThreadTime);
+            }
+        }
 
         ArrayList<Integer> ImageSizes = new ArrayList<Integer>();
 
@@ -131,13 +177,8 @@ public class main {
             ImageSizes.add(img.getWidth() * img.getHeight());
         }
 
-        System.out.println("Times multi : " + multiThreadTimes1);
-        System.out.println("Times single : " + originalSeqTimes1);
-        System.out.println("Times multi : " + multiThreadTimes2);
-        System.out.println("Times single : " + originalSeqTimes2);
-
-        Utils.plotGraphWithImageSize("GrayLevelFilter : Performance", ImageSizes ,originalSeqTimes1, multiThreadTimes1);
-        Utils.plotGraphWithImageSize("GaussianContourExtractorFilter : Performance", ImageSizes ,originalSeqTimes2, multiThreadTimes2);
+        Utils.plotGraphWithImageSize("GrayLevelFilter : Performance", ImageSizes, originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
+        Utils.plotGraphWithImageSize("GaussianContourExtractorFilter : Performance", ImageSizes, originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
     }
 
 
