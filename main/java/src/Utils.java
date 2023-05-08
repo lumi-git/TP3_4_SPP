@@ -53,7 +53,7 @@ public class Utils {
         }
 
         CategoryAxis xAxis = new CategoryAxis("Number of Threads");
-        NumberAxis yAxis = new NumberAxis("Execution Time (ms)");
+        NumberAxis yAxis = new NumberAxis("Execution Time (s)");
 
         BoxAndWhiskerRenderer boxRenderer = new BoxAndWhiskerRenderer();
         boxRenderer.setMeanVisible(false);
@@ -153,7 +153,7 @@ public class Utils {
         JFreeChart chart2 = ChartFactory.createXYLineChart(
                 Title,
                 "Number of Threads",
-                "Time (ms)",
+                "Time (s)",
                 dataset2,
                 PlotOrientation.VERTICAL,
                 true,

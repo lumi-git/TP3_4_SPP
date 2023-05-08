@@ -25,7 +25,7 @@ public class main {
         //for a silent test, set the debug to false
         SETTINGS.DEBUG = false;
 
-        //Graphs1();
+        Graphs1();
         Graphs2();
 
 
@@ -33,7 +33,7 @@ public class main {
 
     public static void Graphs1() {
         int n = 10;
-        int numRuns = 25; // Number of runs for each experiment
+        int numRuns = 100; // Number of runs for each experiment
         IFilter[] filters = {new GrayLevelFilter(), new GaussianContourExtractorFilter()};
 
         ArrayList<ArrayList<Double>> originalSeqTimes1 = new ArrayList<>();
@@ -83,14 +83,14 @@ public class main {
         System.out.println("Times single : " + originalSeqTimes2);
 
 
-        Utils.plotGraphCat("GrayLevelFilter : Performance", originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
-        Utils.plotGraphCat("GaussianContourExtractorFilter : Performance", originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
+        Utils.plotGraphCat("GrayLevelFilter : Execution Time func Nb Thread, NbRun : " + numRuns, originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
+        Utils.plotGraphCat("GaussianContourExtractorFilter : Execution Time func Nb Thread, NbRun : " + numRuns, originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
     }
 
 
     public static void Graphs2() {
         int n = 4;
-        int numRuns = 25; // Number of runs for each experiment
+        int numRuns = 100; // Number of runs for each experiment
         IFilter[] filters = {new GrayLevelFilter(), new GaussianContourExtractorFilter()};
 
         String imageFolderPath = "./TEST_IMAGES/";
@@ -177,8 +177,8 @@ public class main {
             ImageSizes.add(img.getWidth() * img.getHeight());
         }
 
-        Utils.plotGraphWithImageSize("GrayLevelFilter : Performance", ImageSizes, originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
-        Utils.plotGraphWithImageSize("GaussianContourExtractorFilter : Performance", ImageSizes, originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
+        Utils.plotGraphWithImageSize("GrayLevelFilter : Execution Time func image size with 4 Thread, NbRun" + numRuns, ImageSizes, originalSeqTimes1, multiThreadTimes1, SETTINGS.DEBUG);
+        Utils.plotGraphWithImageSize("GaussianContourExtractorFilter : Execution Time func image size with 4 Thread, NbRun" + numRuns, ImageSizes, originalSeqTimes2, multiThreadTimes2, SETTINGS.DEBUG);
     }
 
 
