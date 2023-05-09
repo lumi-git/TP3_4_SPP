@@ -1,5 +1,5 @@
 # TP 3-4 de SPP
-Multithreaded image filtering engine.
+A java Multithreaded image filtering engine.
 
 # About
 
@@ -16,7 +16,7 @@ The both versions takes the same kind of filters implementing IFilter interface.
 
 
 # Part I
-we were given two interfaces, one for the filtering engine and one for the filters.
+We were given two interfaces, one for the filtering engine and one for the filters.
 
 > [Filter Interface](./main/java/src/IFilter.java)
 > 
@@ -41,9 +41,41 @@ The Gray level filter will transform any image in RGB colors, into a output imag
 
 The gaussian contour filter will be applied on a gray scaled image, and will output an image in gray scale but with the contour of the objects in the image more prononced.
 
-For more information about the implementation, see [Subject]().
+For more information about the implementation of the filters, see [Subject](ESIR_SPP_TP_3_4_New_2023.pdf).
 
 # Part II
+
+Based as allways on the [FilteringEngineSkeleton class](./main/java/src/FilteringEngineSkeleton.java) we coded a new version of the filtering engine, based on Threading methodes.
+
+Thanks to multiThreading, we will be able to minimize the computation time to filter an image.
+
+To do so, we will separate the image in smaller task, and then give this task to various workers.
+
+As we work with thread, we had to create a new class that will contain all the work that has to be done in one chunk of the image.
+
+This class is called [ApplyingWorker](./main/java/src/ApplyingWorker.java) .
+
+It contains all the data we need to process a chunk of the image. [see documentation](https://lumi-git.github.io/TP3_4_SPP/FilteringEngineSkeleton.html)
+
+The second Point is the use of [Cyclicbarrier](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CyclicBarrier.html) in java.
+
+This object will be our way to synchronised our thread along the filtering job :
+
+1) In fact, as we have first to deal with separating the entire job and asigning to workers, we need to wait until the job is separated to start all the workers.
+This will be our first synchronisation point.
+
+2) Then after the workers have started, we need to wait until all of them has finish there work to continue. This will be our second synchronisation point.
+
+So, in each of the [Workers](./main/java/src/ApplyingWorker.java) you will find two points of synchronisation, recognizable as awaiting the barrier.
+
+
+
+### Rq 
+We could use here the "join" methode on the thread to wait.
+
+
+
+
 # Part III
 
 ## First experiment
