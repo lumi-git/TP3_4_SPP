@@ -30,6 +30,7 @@ This class will be responsible of all the load, unload of images, capturing exec
 
 All of our concrete engine will extend this class. [see documentation](https://lumi-git.github.io/TP3_4_SPP/FilteringEngineSkeleton.html)
 
+## Filters
 In this part we have implemented the filters based on the implementation described by the [IFilter interface](./main/java/src/IFilter.java)
 
 we've done two filters :
