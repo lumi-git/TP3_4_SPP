@@ -16,6 +16,33 @@ The both versions takes the same kind of filters implementing IFilter interface.
 
 
 # Part I
+we were given two interfaces, one for the filtering engine and one for the filters.
+
+> [Filter Interface](./main/java/src/IFilter.java)
+> 
+> [Engine Interface](./main/java/src/IImageFilteringEngine.java)
+
+## Bonnus
+In addition of these interfaces, we developped a new class called FilteringEngineSkeleton
+> [Engine class](./main/java/src/FilteringEngineSkeleton.java)
+
+This class will be responsible of all the load, unload of images, capturing execution time, and parameters of the main functions of the engine.
+
+All of our concrete engine will extend this class. [see documentation](https://lumi-git.github.io/TP3_4_SPP/FilteringEngineSkeleton.html)
+
+In this part we have implemented the filters based on the implementation described by the [IFilter interface](./main/java/src/IFilter.java)
+
+we've done two filters :
+
+- [Gray level filter](./main/java/src/GrayLevelFilter.java)
+- [Gaussian contour filter](./main/java/src/GaussianContourExtractorFilter.java)
+
+The Gray level filter will transform any image in RGB colors, into a output image with only 256 gray level.
+
+The gaussian contour filter will be applied on a gray scaled image, and will output an image in gray scale but with the contour of the objects in the image more prononced.
+
+For more information about the implementation, see [Subject]().
+
 # Part II
 # Part III
 
